@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Orders - ShopFake</title>
+    <meta charset="UTF-8" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: sans-serif; background: #f5f5f5; color: #333; }
+
+        header {
+            background: #203a43;
+            color: white;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header h1 { font-size: 26px; }
+        .nav-links { display: flex; gap: 12px; align-items: center; }
+        .nav-link {
+            background: PaleGreen;
+            color: #203a43;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 2px 2px 6px #00000033;
+            font-size: 14px;
+        }
+        .nav-link.admin { background: #32d9ef; }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 24px;
+            color: #203a43;
+            border-left: 5px solid #32d9ef;
+            padding-left: 12px;
+        }
+
+        .empty-msg {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: #888;
+            font-size: 18px;
+            box-shadow: 3px 3px 10px #00000022;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 3px 3px 10px #00000022;
+            margin-bottom: 24px;
+        }
+
+        .order-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .order-meta { font-size: 14px; color: #555; }
+        .order-meta strong { color: #203a43; font-size: 16px; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .status-Pending    { background: #fff3cd; color: #856404; }
+        .status-Processing { background: #cce5ff; color: #004085; }
+        .status-Shipped    { background: #d4edda; color: #155724; }
+        .status-Delivered  { background: #d1ecf1; color: #0c5460; }
+
+        .order-total {
+            font-size: 16px;
+            font-weight: bold;
+            color: #203a43;
+        }
+
+        .items-toggle {
+            background: none;
+            border: 1px solid #203a43;
+            color: #203a43;
+            padding: 5px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .items-toggle:hover { background: #203a43; color: white; }
+
+        .items-list {
+            margin-top: 14px;
+            display: none;
+        }
+
+        .items-list.open { display: block; }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .items-table th {
+            background: #f0f0f0;
+            color: #555;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .items-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .items-table tr:last-child td { border-bottom: none; }
+
+        footer {
+            background: #203a43;
+            color: #aaa;
+            text-align: center;
+            padding: 20px;
+            margin-top: 60px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>&#128722; ShopFake</h1>
+        <div class="nav-links">
+            <a class="nav-link" href="/">&#127968; Home</a>
+            <a class="nav-link" href="/cart">&#128717; Cart</a>
+            <a class="nav-link admin" href="/admin/orders">&#9881; Admin Orders</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2 class="section-title">My Orders</h2>
+
+        {% if orders %}
+            {% for order in orders %}
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="order-meta">
+                        <strong>Order #{{ order.id }}</strong><br>
+                        <span>{{ order.created_at }}</span>
+                    </div>
+                    <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
+                    <span class="order-total">${{ "%.2f"|format(order.total) }}</span>
+                </div>
+                <button class="items-toggle" onclick="toggleItems(this)">&#9660; Show Items ({{ order.lines|length }})</button>
+                <div class="items-list">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.lines %}
+                            <tr>
+                                <td>{{ item.product_name }}</td>
+                                <td>${{ "%.2f"|format(item.price) }}</td>
+                                <td>{{ item.qty }}</td>
+                                <td>${{ "%.2f"|format(item.price * item.qty) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-msg">
+                &#128203; You haven't placed any orders yet. <a href="/">Start shopping!</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <footer>&copy; 2026 ShopFake Inc. &mdash; All rights reserved.</footer>
+
+    <script>
+        function toggleItems(btn) {
+            const list = btn.nextElementSibling;
+            list.classList.toggle('open');
+            btn.textContent = list.classList.contains('open')
+                ? btn.textContent.replace('▼', '▲').replace('Show', 'Hide')
+                : btn.textContent.replace('▲', '▼').replace('Hide', 'Show');
+        }
+    </script>
+
+</body>
+</html>

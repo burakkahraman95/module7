@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ShopFake - Online Store</title>
+    <meta charset="UTF-8" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body { font-family: sans-serif; background: #f5f5f5; color: #333; }
+
+        header {
+            background: #203a43;
+            color: white;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header h1 { font-size: 26px; }
+
+        .nav-links { display: flex; gap: 12px; align-items: center; }
+        .nav-link {
+            background: PaleGreen;
+            color: #203a43;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 2px 2px 6px #00000033;
+            font-size: 14px;
+        }
+        .nav-link.admin { background: #32d9ef; }
+
+        .banner {
+            background: linear-gradient(90deg, #32d9ef, #ff89fd, #d9ef32);
+            text-align: center;
+            padding: 12px;
+            font-weight: bold;
+            font-size: 17px;
+            color: #203a43;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 16px;
+            color: #203a43;
+            border-left: 5px solid #32d9ef;
+            padding-left: 12px;
+        }
+
+        /* Category Filter */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 2px solid #203a43;
+            color: #203a43;
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #203a43;
+            color: white;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 3px 3px 10px #00000022;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: opacity 0.3s;
+        }
+
+        .product-card.hidden {
+            display: none;
+        }
+
+        .product-category {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        .product-name { font-size: 17px; font-weight: bold; color: #203a43; }
+
+        .product-description { font-size: 13px; color: #555; flex-grow: 1; }
+
+        .product-price { font-size: 22px; font-weight: bold; color: #203a43; }
+
+        .btn-add {
+            background: PaleGreen;
+            color: #203a43;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 2px 2px 6px #00000033;
+            width: 100%;
+        }
+
+        .btn-add:hover { background: #32d9ef; }
+
+        footer {
+            background: #203a43;
+            color: #aaa;
+            text-align: center;
+            padding: 20px;
+            margin-top: 60px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>&#128722; ShopFake</h1>
+        <div class="nav-links">
+            <a class="nav-link" href="/cart">&#128717; Cart ({{ cart_count }})</a>
+            <a class="nav-link" href="/orders">&#128203; My Orders</a>
+            <a class="nav-link admin" href="/admin/orders">&#9881; Admin Orders</a>
+        </div>
+    </header>
+
+    <div class="banner">
+        &#127873; Summer Sale &mdash; Up to 30% off selected items!
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">Our Products</h2>
+
+        <!-- Category Filter Bar -->
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterCategory('All', this)">All</button>
+            {% set categories = [] %}
+            {% for product in products %}
+                {% if product.category not in categories %}
+                    {% set _ = categories.append(product.category) %}
+                    <button class="filter-btn" onclick="filterCategory('{{ product.category }}', this)">{{ product.category }}</button>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card" data-category="{{ product.category }}">
+                <span class="product-category">{{ product.category }}</span>
+                <div class="product-name">{{ product.name }}</div>
+                <div class="product-description">{{ product.description }}</div>
+                <div class="product-price">${{ "%.2f"|format(product.price) }}</div>
+                <form action="/add_to_cart/{{ product.id }}" method="post">
+                    <button class="btn-add" type="submit">Add to Cart</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <footer>&copy; 2026 ShopFake Inc. &mdash; All rights reserved.</footer>
+
+    <script>
+        function filterCategory(category, btn) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Show/hide product cards
+            document.querySelectorAll('.product-card').forEach(card => {
+                if (category === 'All' || card.dataset.category === category) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Confirmed - ShopFake</title>
+    <meta charset="UTF-8" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: sans-serif; background: #f5f5f5; color: #333; }
+
+        header {
+            background: #203a43;
+            color: white;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header h1 { font-size: 26px; }
+        .nav-links { display: flex; gap: 12px; align-items: center; }
+        .nav-link {
+            background: PaleGreen;
+            color: #203a43;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 2px 2px 6px #00000033;
+            font-size: 14px;
+        }
+        .nav-link.admin {
+            background: #32d9ef;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .confirm-box {
+            background: white;
+            border-radius: 12px;
+            padding: 36px;
+            box-shadow: 3px 3px 10px #00000022;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .confirm-icon { font-size: 52px; margin-bottom: 16px; }
+
+        .confirm-box h2 {
+            font-size: 26px;
+            color: #203a43;
+            margin-bottom: 8px;
+        }
+
+        .order-id {
+            display: inline-block;
+            background: #203a43;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 15px;
+            margin: 12px 0 20px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #203a43;
+            border-left: 5px solid #32d9ef;
+            padding-left: 12px;
+            text-align: left;
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 3px 3px 10px #00000022;
+            margin-bottom: 20px;
+        }
+
+        .order-table th {
+            background: #203a43;
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .order-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .order-table tr:last-child td { border-bottom: none; }
+
+        .total-row {
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            color: #203a43;
+            margin-bottom: 24px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 2px 2px 6px #00000033;
+        }
+
+        .btn-primary {
+            background: PaleGreen;
+            color: #203a43;
+        }
+
+        .btn-secondary {
+            background: #32d9ef;
+            color: #203a43;
+        }
+
+        footer {
+            background: #203a43;
+            color: #aaa;
+            text-align: center;
+            padding: 20px;
+            margin-top: 60px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>&#128722; ShopFake</h1>
+        <div class="nav-links">
+            <a class="nav-link" href="/orders">&#128203; My Orders</a>
+            <a class="nav-link admin" href="/admin/orders">&#9881; Admin Orders</a>
+            <a class="nav-link" href="/">&#8592; Continue Shopping</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="confirm-box">
+            <div class="confirm-icon">&#9989;</div>
+            <h2>Order Placed Successfully!</h2>
+            <p>Thank you for your purchase. Your order has been received.</p>
+            <div class="order-id">Order #{{ order.id }}</div>
+            <p style="color:#888;font-size:13px">{{ order.created_at }}</p>
+        </div>
+
+        <h3 class="section-title">Order Summary</h3>
+
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.lines %}
+                <tr>
+                    <td><strong>{{ item.product_name }}</strong></td>
+                    <td>${{ "%.2f"|format(item.price) }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>${{ "%.2f"|format(item.price * item.qty) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total-row">Total: ${{ "%.2f"|format(order.total) }}</div>
+
+        <div class="actions">
+            <a class="btn btn-secondary" href="/orders">&#128203; View My Orders</a>
+            <a class="btn btn-primary" href="/">&#128722; Continue Shopping</a>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 ShopFake Inc. &mdash; All rights reserved.</footer>
+
+</body>
+</html>

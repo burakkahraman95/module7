@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Cart - ShopFake</title>
+    <meta charset="UTF-8" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body { font-family: sans-serif; background: #f5f5f5; color: #333; }
+
+        header {
+            background: #203a43;
+            color: white;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header h1 { font-size: 26px; }
+
+        .nav-links { display: flex; gap: 12px; align-items: center; }
+        .nav-link {
+            background: PaleGreen;
+            color: #203a43;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 2px 2px 6px #00000033;
+            font-size: 14px;
+        }
+        .nav-link.admin { background: #32d9ef; }
+
+        .btn-place-order {
+            background: #203a43;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 16px;
+            box-shadow: 2px 2px 6px #00000033;
+        }
+        .btn-place-order:hover { background: #32d9ef; color: #203a43; }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 24px;
+            color: #203a43;
+            border-left: 5px solid #32d9ef;
+            padding-left: 12px;
+        }
+
+        .empty-msg {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: #888;
+            font-size: 18px;
+            box-shadow: 3px 3px 10px #00000022;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 3px 3px 10px #00000022;
+        }
+
+        .cart-table th {
+            background: #203a43;
+            color: white;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .cart-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .cart-table tr:last-child td { border-bottom: none; }
+
+        .btn-remove {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-remove:hover { background: #e63946; }
+
+        .total-row {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #203a43;
+        }
+
+        .btn-clear {
+            background: #aaa;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        .btn-clear:hover { background: #888; }
+
+        footer {
+            background: #203a43;
+            color: #aaa;
+            text-align: center;
+            padding: 20px;
+            margin-top: 60px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>&#128722; ShopFake</h1>
+        <div class="nav-links">
+            <a class="nav-link" href="/">&#8592; Continue Shopping</a>
+            <a class="nav-link" href="/orders">&#128203; My Orders</a>
+            <a class="nav-link admin" href="/admin/orders">&#9881; Admin Orders</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2 class="section-title">Your Cart</h2>
+
+        {% if cart_items %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td><strong>{{ item.name }}</strong><br><span style="color:#888;font-size:12px">{{ item.category }}</span></td>
+                    <td>${{ "%.2f"|format(item.price) }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>${{ "%.2f"|format(item.subtotal) }}</td>
+                    <td>
+                        <form action="/remove_from_cart/{{ item.id }}" method="post">
+                            <button class="btn-remove" type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total-row">Total: ${{ "%.2f"|format(total) }}</div>
+
+        <form action="/place_order" method="post">
+            <button class="btn-place-order" type="submit">&#9989; Place Order</button>
+        </form>
+
+        <form action="/clear_cart" method="post">
+            <button class="btn-clear" type="submit">Clear Cart</button>
+        </form>
+
+        {% else %}
+        <div class="empty-msg">
+            &#128717; Your cart is empty. <a href="/">Start shopping!</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <footer>&copy; 2026 ShopFake Inc. &mdash; All rights reserved.</footer>
+
+</body>
+</html>
